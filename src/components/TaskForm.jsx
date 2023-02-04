@@ -1,21 +1,46 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { TaskContext } from "../context/TaskContext";
 
 function TaskForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const { createTask } = useContext(TaskContext);
+  const [formEdit, setFormEdit] = useState(false);
+
+  const { createTask, taskForEdit, updateTask } = useContext(TaskContext);
+
+  // taskForEdit = {
+    // id: 0,
+    // title: "mi primera tarea",
+    // description: "mi primera tarea",
+  // },
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createTask({
-      title,
-      description,
-    });
+    if(formEdit){
+      updateTask({
+        title,
+        description,
+        id: taskForEdit.id
+      })
+      setFormEdit(false)
+    }else{
+      createTask({
+        title, // el valor de la llave tiene el mismo nombre que la llave "title:title"
+        description,
+      });
+    }
     setTitle("");
     setDescription("");
   };
+
+  useEffect(() =>{
+    if(taskForEdit.title){
+      setTitle(taskForEdit.title);
+      setDescription(taskForEdit.description);
+      setFormEdit(true)
+    }
+  }, [taskForEdit])
 
   return (
     <div className="max-w-md mx-auto">
